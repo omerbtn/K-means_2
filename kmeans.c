@@ -22,6 +22,7 @@ void     freeMemory(double**, int*, int, int);
 
 int main(int argc, char *argv[])
 {
+    /* dont really need all of below code !!!!!
     int k, n, d, iter;
     int i;
     double **points;
@@ -51,6 +52,9 @@ int main(int argc, char *argv[])
     k_means_actually(points, indices, k, n, d, iter, epsilon);
 
     return 0;
+    */
+   int k = 0, n = 0, d = 0, iter = 0, eps = 0;
+   
 }
 
 double** k_means_actually(double** points, int* centroids_indices, int k, int n, int d, int iter, double eps) {

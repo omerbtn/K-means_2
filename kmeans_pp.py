@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import sys
 import math
+import mykmeanssp as km
 
 ITER_DEFAULT = 300
 
@@ -20,6 +21,7 @@ def main():
     df1 = pd.read_csv(path_1, header=None)
     df2 = pd.read_csv(path_2, header=None)
     points = df1.join(df2.set_index(0), on=0, how='inner', rsuffix='_df2', lsuffix='_df1')
+    # print(points.dtypes)
     points = points.sort_values(by=0)
     n = points.shape[0]
     d = points.shape[1] - 1
@@ -39,6 +41,8 @@ def main():
         centroids_indices.append(np.random.choice(np.arange(n), size=1, p=min_dists)[0])
 
     print(centroids_indices)
+    # continuation of the program- includes sending to c and receiveing actual centroids.
+    # then print the centroids as requested
 
 
 def calc_min_dist(p, centroids_indices, points):
