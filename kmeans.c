@@ -58,7 +58,7 @@ double** k_means_actually(double** points, int* centroids_indices, int k, int n,
         }
     }
     
-    freeMemory(centroids, cluster_index, n, k);   
+    freeMemory(NULL, cluster_index, n, k);   
     return centroids;
 }
 

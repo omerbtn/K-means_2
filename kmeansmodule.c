@@ -3,6 +3,7 @@
 #include <math.h>
 #include "kmeans.h"
 
+void freeMemoryModule(double**, int*, double**, int, int);
 // double** k_means_actually(double**, int*, int, int, int, int, double);
 
 static PyObject* fit(PyObject *self, PyObject *args){
@@ -44,6 +45,7 @@ static PyObject* fit(PyObject *self, PyObject *args){
     if (points == NULL){
         //allocation error
         //FREE MEMORY
+        freeMemoryModule(points, centroids_indices, NULL, n, k);
         return NULL;
     }
     // for each point allocate memory
@@ -52,6 +54,7 @@ static PyObject* fit(PyObject *self, PyObject *args){
         if (points[i] == NULL){
             // allocation error
             //FREE MEMORY
+            freeMemoryModule(points, centroids_indices, NULL, n, k);
             return NULL;
         }
     }
@@ -69,6 +72,7 @@ static PyObject* fit(PyObject *self, PyObject *args){
     pycentroids = PyList_New(k); // Create the outer list
     if (pycentroids == NULL) {
         // Error handling
+        freeMemoryModule(points, centroids_indices, centroids, n, k);
         return NULL;
     }
 
@@ -79,6 +83,7 @@ static PyObject* fit(PyObject *self, PyObject *args){
             // Error handling
             // FREE MEMORY
             // Py_DECREF(pycentroids);
+            freeMemoryModule(points, centroids_indices, centroids, n, k);
             return NULL;
         }
 
@@ -89,6 +94,7 @@ static PyObject* fit(PyObject *self, PyObject *args){
                 // Error handling
                 // Py_DECREF(centroid_coords);
                 // Py_DECREF(pycentroids);
+                freeMemoryModule(points, centroids_indices, centroids, n, k);
                 return NULL;
             }
             PyList_SET_ITEM(centroid_coords, j, value); // Set the element in the inner list
@@ -96,6 +102,8 @@ static PyObject* fit(PyObject *self, PyObject *args){
 
         PyList_SET_ITEM(pycentroids, i, centroid_coords); // Set the inner list in the outer list
     }
+
+    freeMemoryModule(points, centroids_indices, centroids, n, k);
 
     return pycentroids;
 
@@ -127,4 +135,25 @@ PyMODINIT_FUNC PyInit_mykmeanssp(void){
         return NULL;
     }
     return m;
+}
+
+
+void freeMemoryModule(double** points, int* centroid_indices, double** centroids, int n, int k){
+    int i;
+
+    if (points != NULL){
+        for (i = 0; i < n; i++){
+            free(points[i]);
+        }
+        free(points);
+    }
+
+    free(centroid_indices);
+
+    if (centroids != NULL){
+        for (i = 0; i < k; i++){
+            free(centroids[i]);
+        }
+        free(centroids);
+    }
 }
