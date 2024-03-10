@@ -10,52 +10,12 @@
 #define     epsilon         0.001
 
 double** k_means_actually(double**, int*, int, int, int, int, double);
-void     insertPointsFromStdin(double**, int, int);
-int      checkLegal(int, int, int, int);
 int      findClosestCentroid(double*, double**, int, int);
 void     updatePoints(double**, double**, int*, int, int, int);
 int      updateCentroids(double**, int*, double**, int, int, int, double);
 double   dist(double*, double*, int);
-void     printCentroids(double**, int, int);
 void     freeMemory(double**, int*, int, int);
 
-
-int main(int argc, char *argv[])
-{
-    /* dont really need all of below code !!!!!
-    int k, n, d, iter;
-    int i;
-    double **points;
-    int* indices;
-
-    if (argc > 5 || argc < 4){
-        printf("An Error Has Occurred\n");
-        return 0;
-    }
-    if (argc == 4){
-        iter = ITER_DEFAULT;
-    } else {
-        iter = atoi(argv[4]);
-    }
-    k = atoi(argv[1]);
-    n = atoi(argv[2]);
-    d = atoi(argv[3]);
-    if (checkLegal(k, n, d, iter) == 0){
-        return 0;
-    }
-
-    indices = calloc(k, sizeof(int));
-    for (i = 0; i < k; i++){
-        indices[i] = i;
-    }
-
-    k_means_actually(points, indices, k, n, d, iter, epsilon);
-
-    return 0;
-    */
-   int k = 0, n = 0, d = 0, iter = 0, eps = 0;
-   
-}
 
 double** k_means_actually(double** points, int* centroids_indices, int k, int n, int d, int iter, double eps) {
     double **centroids;
@@ -68,7 +28,7 @@ double** k_means_actually(double** points, int* centroids_indices, int k, int n,
     if (centroids == NULL || cluster_index == NULL){
         freeMemory(centroids, cluster_index, n, k);
         printf("An Error Has Occurred\n");
-        return 1;
+        return NULL;
     }
 
     for (i = 0 ; i < k ; i++) {
@@ -76,7 +36,7 @@ double** k_means_actually(double** points, int* centroids_indices, int k, int n,
         if (centroids[i] == NULL){
             freeMemory(centroids, cluster_index, n, k);
             printf("An Error Has Occurred\n");
-            return 1;
+            return NULL;
         }
     }
 
@@ -94,11 +54,10 @@ double** k_means_actually(double** points, int* centroids_indices, int k, int n,
         if (update == -1){
             freeMemory(centroids, cluster_index, n, k);
             printf("An Error Has Occurred\n");   
-            return 1;
+            return NULL;
         }
     }
     
-    //printCentroids(centroids, k, d);
     freeMemory(centroids, cluster_index, n, k);   
     return centroids;
 }
@@ -185,50 +144,6 @@ double dist(double* p1, double* p2, int d){
         sum += diff * diff;
     }
     return sqrt(sum);
-}
-
-void insertPointsFromStdin(double **points, int n, int d){
-    int i, j;
-    double double_val;
-    for (i = 0 ; i < n ; i++){
-        for (j = 0 ; j < d - 1 ; j++){
-            scanf("%lf,", &double_val);
-            points[i][j] = double_val;
-        }
-        scanf("%lf", &double_val);
-        points[i][d - 1] = double_val;
-    }
-}
-
-int checkLegal(int k, int n, int d, int iter){
-    if (k <= 1 || k >= n){
-        printf ("Invalid number of clusters!\n");
-        return 0;
-    }
-    if (n <= 1){
-        printf ("Invalid number of points!\n");
-        return 0;
-    }
-    if (d < 1){
-        printf ("Invalid dimension of point!\n");
-        return 0;
-    }
-    if (iter <= 1 || iter >= 1000){
-        printf ("Invalid maximum iteration!\n");
-        return 0;
-    }
-    return 1;
-}
-
-void printCentroids(double** centroids, int k, int d){
-    int i, j;
-    
-    for (i = 0 ; i < k ; i++){
-        for (j = 0 ; j < d-1 ; j++){
-            printf("%.4f,", centroids[i][j]);
-        }
-        printf("%.4f\r\n", centroids[i][d-1]);
-    }
 }
 
 void freeMemory(double** centroids, int* cluster_index, int n, int k){

@@ -66,8 +66,39 @@ static PyObject* fit(PyObject *self, PyObject *args){
     centroids = k_means_actually(points, centroids_indices, k, n, d, iter, eps);
     // FREE ALL MEMORY ALLOCATED
 
-    // NEED TO WORK THIS OUT
-    return Py_BuildValue("O", centroids);
+    pycentroids = PyList_New(k); // Create the outer list
+    if (pycentroids == NULL) {
+        // Error handling
+        return NULL;
+    }
+
+    // Iterate over rows of the array
+    for (i = 0; i < k; i++) {
+        PyObject *centroid_coords = PyList_New(d); // Create the inner list for each row
+        if (centroid_coords == NULL) {
+            // Error handling
+            // FREE MEMORY
+            // Py_DECREF(pycentroids);
+            return NULL;
+        }
+
+        // Iterate over columns of the array
+        for (j = 0; j < d; j++) {
+            PyObject *value = PyFloat_FromDouble(centroids[i][j]); // Create a Python float object for each element
+            if (value == NULL) {
+                // Error handling
+                // Py_DECREF(centroid_coords);
+                // Py_DECREF(pycentroids);
+                return NULL;
+            }
+            PyList_SET_ITEM(centroid_coords, j, value); // Set the element in the inner list
+        }
+
+        PyList_SET_ITEM(pycentroids, i, centroid_coords); // Set the inner list in the outer list
+    }
+
+    return pycentroids;
+
 }
 
 
