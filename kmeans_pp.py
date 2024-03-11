@@ -28,7 +28,7 @@ def main():
 
     np.random.seed(0)
     centroids_indices = [np.random.choice(n)]
-    
+
     min_dists = np.asarray([0.0 for i in range(n)])
     for i in range(k - 1):
         for j in range(n):
@@ -43,14 +43,12 @@ def main():
     indices_print_str += str(centroids_indices[k-1])
     print(indices_print_str, end="\r\n")
 
-    # continuation of the program- includes sending to c and receiveing actual centroids.
     points_modified = points.drop(columns=points.columns[0]).values.tolist()
 
     centroids = km.fit(points_modified, centroids_indices, k, n, d, iter, eps)
     if centroids == None:
         print("An Error Has Occurred")
     else:
-        # then print the centroids coordinates as requested
         for c in centroids:
             for dim in range(d):
                 c[dim] = round(c[dim], 4)
@@ -59,7 +57,6 @@ def main():
 
 
 def calc_min_dist(p, centroids_indices, points):
-    # print(p)
     min_dist = dist(p, points.iloc[centroids_indices[0], 1:])
     for i in range(1, len(centroids_indices)):
         curr_dist = dist(p, points.iloc[centroids_indices[i], 1:])
