@@ -102,6 +102,7 @@ def checkLegal(argv):
         n = df1.shape[0]
     except:
         print("An Error Has Occurred")
+        print("here")
         return False
 
     if k <= 1 or k >= n:
