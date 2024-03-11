@@ -23,8 +23,10 @@ def main():
 
     points = df1.join(df2.set_index(0), on=0, how='inner', rsuffix='_df2', lsuffix='_df1')
     points = points.sort_values(by=0)
+    points.drop(columns=points.columns[0], inplace=True)
     n = points.shape[0]
-    d = points.shape[1] - 1
+    d = points.shape[1]
+    points = points.to_numpy()
 
     np.random.seed(0)
     centroids_indices = [np.random.choice(n)]
@@ -32,7 +34,7 @@ def main():
     min_dists = np.asarray([0.0 for i in range(n)])
     for i in range(k - 1):
         for j in range(n):
-            min_dists[j] = calc_min_dist(points.iloc[j, 1:].to_numpy(), centroids_indices, points)
+            min_dists[j] = calc_min_dist(points[j], centroids_indices, points)
         total_sum = np.sum(min_dists)
         np.divide(min_dists, total_sum, out=min_dists, casting="unsafe")
         centroids_indices.append(np.random.choice(np.arange(n), size=1, p=min_dists)[0])
@@ -43,23 +45,19 @@ def main():
     indices_print_str += str(centroids_indices[k-1])
     print(indices_print_str, end="\r\n")
 
-    points_modified = points.drop(columns=points.columns[0]).values.tolist()
-
-    centroids = km.fit(points_modified, centroids_indices, k, n, d, iter, eps)
-    if centroids == None:
+    points = points.tolist()
+    centroids = km.fit(points, centroids_indices, k, n, d, iter, eps)
+    if centroids is None:
         print("An Error Has Occurred")
-    else:
-        for c in centroids:
-            for dim in range(d):
-                c[dim] = round(c[dim], 4)
-        printFormat(centroids,k,d)
+        return
 
+    printFormat(centroids, k, d)
 
 
 def calc_min_dist(p, centroids_indices, points):
-    min_dist = dist(p, points.iloc[centroids_indices[0], 1:])
+    min_dist = dist(p, points[0])
     for i in range(1, len(centroids_indices)):
-        curr_dist = dist(p, points.iloc[centroids_indices[i], 1:])
+        curr_dist = dist(p, points[i])
         if curr_dist < min_dist:
             min_dist = curr_dist
     return min_dist
@@ -73,12 +71,11 @@ def dist(point1, point2):
 
 
 def printFormat(centroids, k, d):
-    res = ""
     for i in range(k):
-        for j in range(d-1):
-            res += str(centroids[i][j]) + ","
-        print(res + str(centroids[i][d-1]), end="\r\n")
         res = ""
+        for j in range(d-1):
+            res += "{:.4f}".format(centroids[i][j]) + ","
+        print(res + "{:.4f}".format(centroids[i][d-1]), end="\r\n")
 
 
 def checkLegal(argv):

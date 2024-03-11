@@ -4,7 +4,6 @@
 #include "kmeans.h"
 
 void freeMemoryModule(double**, int*, double**, int, int);
-// double** k_means_actually(double**, int*, int, int, int, int, double);
 
 static PyObject* fit(PyObject *self, PyObject *args){
     int k, n, d, iter, i, j;
@@ -28,7 +27,7 @@ static PyObject* fit(PyObject *self, PyObject *args){
     }
 
     // create C empty array of k indexes
-    centroids_indices = calloc(k, sizeof(int));
+    centroids_indices = malloc(k * sizeof(int));
     if (centroids_indices == NULL){
         // allocation error
         return NULL;
@@ -36,12 +35,12 @@ static PyObject* fit(PyObject *self, PyObject *args){
 
     for (i = 0; i < k; i++){
         item = PyList_GetItem(pycentroids, i);
-        index = PyLong_AsLong(item); // Supposed to be ok and translate to int, and k will not be too large...
+        index = (int) PyLong_AsLong(item); // Supposed to be ok and translate to int, and k will not be too large...
         centroids_indices[i] = index;
     }
     
     // create C empty points array of n points
-    points = calloc(n, sizeof(double*));
+    points = malloc(n * sizeof(double*));
     if (points == NULL){
         //allocation error
         //FREE MEMORY
@@ -50,7 +49,7 @@ static PyObject* fit(PyObject *self, PyObject *args){
     }
     // for each point allocate memory
     for (i = 0; i < n; i++){
-        points[i] = calloc(d, sizeof(double));
+        points[i] = malloc(d * sizeof(double));
         if (points[i] == NULL){
             // allocation error
             //FREE MEMORY
@@ -67,7 +66,10 @@ static PyObject* fit(PyObject *self, PyObject *args){
         }
     }
     centroids = k_means_actually(points, centroids_indices, k, n, d, iter, eps);
-    // FREE ALL MEMORY ALLOCATED
+    if (centroids == NULL){
+        freeMemoryModule(points, centroids_indices, centroids, n, k);
+        return NULL;
+    }
 
     pycentroids = PyList_New(k); // Create the outer list
     if (pycentroids == NULL) {
