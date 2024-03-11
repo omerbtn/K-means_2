@@ -27,7 +27,6 @@ double** k_means_actually(double** points, int* centroids_indices, int k, int n,
 
     if (centroids == NULL || cluster_index == NULL){
         freeMemory(centroids, cluster_index, n, k);
-        printf("An Error Has Occurred\n");
         return NULL;
     }
 
@@ -35,7 +34,6 @@ double** k_means_actually(double** points, int* centroids_indices, int k, int n,
         centroids[i] = calloc(d, sizeof(double));
         if (centroids[i] == NULL){
             freeMemory(centroids, cluster_index, n, k);
-            printf("An Error Has Occurred\n");
             return NULL;
         }
     }
@@ -53,7 +51,6 @@ double** k_means_actually(double** points, int* centroids_indices, int k, int n,
         }
         if (update == -1){
             freeMemory(centroids, cluster_index, n, k);
-            printf("An Error Has Occurred\n");   
             return NULL;
         }
     }

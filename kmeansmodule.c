@@ -42,8 +42,7 @@ static PyObject* fit(PyObject *self, PyObject *args){
     // create C empty points array of n points
     points = malloc(n * sizeof(double*));
     if (points == NULL){
-        //allocation error
-        //FREE MEMORY
+        // allocation error
         freeMemoryModule(points, centroids_indices, NULL, n, k);
         return NULL;
     }
@@ -52,7 +51,6 @@ static PyObject* fit(PyObject *self, PyObject *args){
         points[i] = malloc(d * sizeof(double));
         if (points[i] == NULL){
             // allocation error
-            //FREE MEMORY
             freeMemoryModule(points, centroids_indices, NULL, n, k);
             return NULL;
         }
@@ -65,7 +63,9 @@ static PyObject* fit(PyObject *self, PyObject *args){
             points[i][j] = coordinate;
         }
     }
+
     centroids = k_means_actually(points, centroids_indices, k, n, d, iter, eps);
+    
     if (centroids == NULL){
         freeMemoryModule(points, centroids_indices, centroids, n, k);
         return NULL;

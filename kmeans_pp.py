@@ -57,7 +57,7 @@ def main():
 def calc_min_dist(p, centroids_indices, points):
     min_dist = dist(p, points[0])
     for i in range(1, len(centroids_indices)):
-        curr_dist = dist(p, points[i])
+        curr_dist = dist(p, points[centroids_indices[i]])
         if curr_dist < min_dist:
             min_dist = curr_dist
     return min_dist
