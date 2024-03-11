@@ -18,21 +18,17 @@ def main():
     eps = float(argv[3]) if len(argv) == 6 else float(argv[2])
     path_1 = argv[4] if len(argv) == 6 else argv[3]
     path_2 = argv[5] if len(argv) == 6 else argv[4]
-
-    # ADD CHECK LEGAL FOR K>0 FOR EXAMPLE
-
     df1 = pd.read_csv(path_1, header=None)
     df2 = pd.read_csv(path_2, header=None)
+
     points = df1.join(df2.set_index(0), on=0, how='inner', rsuffix='_df2', lsuffix='_df1')
     points = points.sort_values(by=0)
     n = points.shape[0]
     d = points.shape[1] - 1
-    # points = points.to_numpy()
-    # print(points)
-    np.random.seed(0)
-    # assert input is valid
 
+    np.random.seed(0)
     centroids_indices = [np.random.choice(n)]
+    
     min_dists = np.asarray([0.0 for i in range(n)])
     for i in range(k - 1):
         for j in range(n):
@@ -45,7 +41,7 @@ def main():
     for i in range(k-1):
         indices_print_str += str(centroids_indices[i]) + ","
     indices_print_str += str(centroids_indices[k-1])
-    print(indices_print_str)
+    print(indices_print_str, end="\r\n")
 
     # continuation of the program- includes sending to c and receiveing actual centroids.
     points_modified = points.drop(columns=points.columns[0]).values.tolist()
@@ -84,7 +80,7 @@ def printFormat(centroids, k, d):
     for i in range(k):
         for j in range(d-1):
             res += str(centroids[i][j]) + ","
-        print(res + str(centroids[i][d-1]))
+        print(res + str(centroids[i][d-1]), end="\r\n")
         res = ""
 
 
@@ -97,12 +93,10 @@ def checkLegal(argv):
         iter = int(argv[2]) if len(argv) == 6 else ITER_DEFAULT
         eps = float(argv[3]) if len(argv) == 6 else float(argv[2])
         path_1 = argv[4] if len(argv) == 6 else argv[3]
-        path_2 = argv[5] if len(argv) == 6 else argv[4]
         df1 = pd.read_csv(path_1, header=None)
         n = df1.shape[0]
     except:
         print("An Error Has Occurred")
-        print("here")
         return False
 
     if k <= 1 or k >= n:
