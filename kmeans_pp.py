@@ -44,7 +44,7 @@ def main():
     try:
         centroids = km.fit(points, centroids_indices, k, n, d, iter, eps)
     except SystemError:
-        print("An Error Has Occurred")
+        print("An Error Has Occurred", end="\r\n")
         return
 
     print_centroids_indices(centroids_indices, k)
@@ -85,7 +85,7 @@ def print_centroids(centroids, k, d):
 
 def check_legal(argv):
     if len(argv) > 6 or len(argv) < 5:
-        print("An Error Has Occurred")
+        print("An Error Has Occurred", end="\r\n")
         return False
     try:
         k = int(argv[1])
@@ -95,17 +95,17 @@ def check_legal(argv):
         df1 = pd.read_csv(path_1, header=None)
         n = df1.shape[0]
     except:
-        print("An Error Has Occurred")
+        print("An Error Has Occurred", end="\r\n")
         return False
 
     if k <= 1 or k >= n:
-        print("Invalid number of clusters!")
+        print("Invalid number of clusters!", end="\r\n")
         return False
     if iter <= 1 or iter >= 1000:
-        print("Invalid maximum iteration!")
+        print("Invalid maximum iteration!", end="\r\n")
         return False
     if eps < 0:
-        print("Invalid epsilon!")
+        print("Invalid epsilon!", end="\r\n")
         return False
     
     return True
