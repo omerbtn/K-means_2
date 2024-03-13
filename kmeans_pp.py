@@ -10,7 +10,7 @@ ITER_DEFAULT = 300
 def main():
     argv = sys.argv
         
-    if not checkLegal(argv):
+    if not check_legal(argv):
         return
 
     k = int(argv[1])
@@ -39,23 +39,20 @@ def main():
         np.divide(min_dists, total_sum, out=min_dists, casting="unsafe")
         centroids_indices.append(np.random.choice(np.arange(n), size=1, p=min_dists)[0])
 
-    indices_print_str = ""
-    for i in range(k-1):
-        indices_print_str += str(centroids_indices[i]) + ","
-    indices_print_str += str(centroids_indices[k-1])
-    print(indices_print_str, end="\r\n")
-
     points = points.tolist()
-    centroids = km.fit(points, centroids_indices, k, n, d, iter, eps)
-    if centroids is None:
+
+    try:
+        centroids = km.fit(points, centroids_indices, k, n, d, iter, eps)
+    except SystemError:
         print("An Error Has Occurred")
         return
 
-    printFormat(centroids, k, d)
+    print_centroids_indices(centroids_indices, k)
+    print_centroids(centroids, k, d)
 
 
 def calc_min_dist(p, centroids_indices, points):
-    min_dist = dist(p, points[0])
+    min_dist = dist(p, points[centroids_indices[0]])
     for i in range(1, len(centroids_indices)):
         curr_dist = dist(p, points[centroids_indices[i]])
         if curr_dist < min_dist:
@@ -70,7 +67,15 @@ def dist(point1, point2):
     return distance
 
 
-def printFormat(centroids, k, d):
+def print_centroids_indices(centroids_indices, k):
+    res = ""
+    for i in range(k-1):
+        res += str(centroids_indices[i]) + ","
+    res += str(centroids_indices[k-1])
+    print(res, end="\r\n")
+
+
+def print_centroids(centroids, k, d):
     for i in range(k):
         res = ""
         for j in range(d-1):
@@ -78,7 +83,7 @@ def printFormat(centroids, k, d):
         print(res + "{:.4f}".format(centroids[i][d-1]), end="\r\n")
 
 
-def checkLegal(argv):
+def check_legal(argv):
     if len(argv) > 6 or len(argv) < 5:
         print("An Error Has Occurred")
         return False

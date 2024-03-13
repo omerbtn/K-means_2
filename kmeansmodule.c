@@ -35,7 +35,7 @@ static PyObject* fit(PyObject *self, PyObject *args){
 
     for (i = 0; i < k; i++){
         item = PyList_GetItem(pycentroids, i);
-        index = (int) PyLong_AsLong(item); // Supposed to be ok and translate to int, and k will not be too large...
+        index = (int) PyLong_AsLong(item);
         centroids_indices[i] = index;
     }
     
@@ -59,7 +59,7 @@ static PyObject* fit(PyObject *self, PyObject *args){
     for (i = 0; i < n; i++){ // going by each point
         point = PyList_GetItem(pypoints, i);
         for (j = 0; j < d; j++){
-            coordinate = PyFloat_AsDouble(PyList_GetItem(point, j)); // Should work, since python's "points" array is in floats
+            coordinate = PyFloat_AsDouble(PyList_GetItem(point, j));
             points[i][j] = coordinate;
         }
     }
@@ -83,8 +83,6 @@ static PyObject* fit(PyObject *self, PyObject *args){
         PyObject *centroid_coords = PyList_New(d); // Create the inner list for each row
         if (centroid_coords == NULL) {
             // Error handling
-            // FREE MEMORY
-            // Py_DECREF(pycentroids);
             freeMemoryModule(points, centroids_indices, centroids, n, k);
             return NULL;
         }
@@ -94,8 +92,6 @@ static PyObject* fit(PyObject *self, PyObject *args){
             PyObject *value = PyFloat_FromDouble(centroids[i][j]); // Create a Python float object for each element
             if (value == NULL) {
                 // Error handling
-                // Py_DECREF(centroid_coords);
-                // Py_DECREF(pycentroids);
                 freeMemoryModule(points, centroids_indices, centroids, n, k);
                 return NULL;
             }
