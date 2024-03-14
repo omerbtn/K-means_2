@@ -26,10 +26,8 @@ static PyObject* fit(PyObject *self, PyObject *args){
         return NULL;
     }
 
-    // create C empty array of k indexes
     centroids_indices = malloc(k * sizeof(int));
     if (centroids_indices == NULL){
-        // allocation error
         return NULL;
     }
 
@@ -39,24 +37,19 @@ static PyObject* fit(PyObject *self, PyObject *args){
         centroids_indices[i] = index;
     }
     
-    // create C empty points array of n points
     points = malloc(n * sizeof(double*));
     if (points == NULL){
-        // allocation error
         freeMemoryModule(points, centroids_indices, NULL, n, k);
         return NULL;
     }
-    // for each point allocate memory
     for (i = 0; i < n; i++){
         points[i] = malloc(d * sizeof(double));
         if (points[i] == NULL){
-            // allocation error
             freeMemoryModule(points, centroids_indices, NULL, n, k);
             return NULL;
         }
     }
-    // for each point create it from python in c
-    for (i = 0; i < n; i++){ // going by each point
+    for (i = 0; i < n; i++){
         point = PyList_GetItem(pypoints, i);
         for (j = 0; j < d; j++){
             coordinate = PyFloat_AsDouble(PyList_GetItem(point, j));
@@ -71,34 +64,29 @@ static PyObject* fit(PyObject *self, PyObject *args){
         return NULL;
     }
 
-    pycentroids = PyList_New(k); // Create the outer list
+    pycentroids = PyList_New(k);
     if (pycentroids == NULL) {
-        // Error handling
         freeMemoryModule(points, centroids_indices, centroids, n, k);
         return NULL;
     }
 
-    // Iterate over rows of the array
     for (i = 0; i < k; i++) {
-        PyObject *centroid_coords = PyList_New(d); // Create the inner list for each row
+        PyObject *centroid_coords = PyList_New(d);
         if (centroid_coords == NULL) {
-            // Error handling
             freeMemoryModule(points, centroids_indices, centroids, n, k);
             return NULL;
         }
 
-        // Iterate over columns of the array
         for (j = 0; j < d; j++) {
-            PyObject *value = PyFloat_FromDouble(centroids[i][j]); // Create a Python float object for each element
+            PyObject *value = PyFloat_FromDouble(centroids[i][j]);
             if (value == NULL) {
-                // Error handling
                 freeMemoryModule(points, centroids_indices, centroids, n, k);
                 return NULL;
             }
-            PyList_SET_ITEM(centroid_coords, j, value); // Set the element in the inner list
+            PyList_SET_ITEM(centroid_coords, j, value);
         }
 
-        PyList_SET_ITEM(pycentroids, i, centroid_coords); // Set the inner list in the outer list
+        PyList_SET_ITEM(pycentroids, i, centroid_coords);
     }
 
     freeMemoryModule(points, centroids_indices, centroids, n, k);
@@ -112,7 +100,8 @@ static PyMethodDef kmeansMethods[] = {
     {"fit",
     (PyCFunction) fit,
     METH_VARARGS,
-    PyDoc_STR("Receives arguments and returns the appropriate centroids based on K-means algorithm")},
+    PyDoc_STR("Receives list of points, list of centroid indices, k, n, d, iter, eps. Returns the appropriate centroids based on K-means algorithm")},
+    &pypoints, &pycentroids, &k, &n, &d, &iter, &eps
     {NULL, NULL, 0, NULL}
 };
 
