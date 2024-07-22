@@ -101,7 +101,6 @@ static PyMethodDef kmeansMethods[] = {
     (PyCFunction) fit,
     METH_VARARGS,
     PyDoc_STR("Receives list of points, list of centroid indices, k, n, d, iter, eps. Returns the appropriate centroids based on K-means algorithm")},
-    &pypoints, &pycentroids, &k, &n, &d, &iter, &eps
     {NULL, NULL, 0, NULL}
 };
 
